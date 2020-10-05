@@ -1,0 +1,22 @@
+//
+// build.gradle in ycv-440-1
+//
+// SdkVersion is taken from openCV 4.4.0
+// version is combo of opencv and this version of ycv
+//
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
+
+    defaultConfig {
+        targetSdkVersion 29
+        versionCode 4401
+        versionName "440.1"
+    }
+}
+
+dependencies {
+    implementation project(path: ':openCVLibrary440')
+}
