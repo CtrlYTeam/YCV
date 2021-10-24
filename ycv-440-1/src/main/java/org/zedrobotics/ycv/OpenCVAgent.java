@@ -18,11 +18,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * By downloading, copying, installing or using the software you agree to this license.
  * If you do not agree to this license, do not download, install,
  * copy or use the software.
-*/
+ */
 
 package org.zedrobotics.ycv;
 
@@ -46,7 +46,7 @@ import android.view.ViewGroup;
 public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "OpenCVAgent";   // Logging Tag
-    private static boolean loaded = false;             // Flag to indicate if opencv library module is loaded
+    private static boolean loaded;                     // Flag to indicate if opencv library module is loaded
 
     //
     //  Static block of code to execute only once, prior to constructor methods,
@@ -56,13 +56,13 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
     static {
         Log.d(TAG, "static method");
         try {
-            // need to load libopencv_java3.so into project
+            // need to load libopencv_java4.so into project
             Log.d(TAG, "loading libopencv_java4.so");
             System.loadLibrary("opencv_java4");
             loaded = true;
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "yo, buddy, looks like you didn't read the readme.md");
-            Log.e(TAG, "you gotta get the libopencv_java3.so into the project!");
+            Log.e(TAG, "you gotta get the libopencv_java4.so into the project!");
             loaded = false;
         }
     }
@@ -81,7 +81,7 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
     private Mat mRgbaF;
     private Mat mRgbaT;
 
-    
+
     /**
      *  No frills constructor for OpenCVAgent.
      *  Intentionally doesn't do anything.
@@ -90,15 +90,15 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
     public OpenCVAgent() {
         Log.d(TAG, "constructor() in OpenCVAgent");
     }
-    
+
     /**
      * Initializes OpenCVAgent.
      * Inner classes may access 'final' fields, so the init arguments use 'final' modifiers to declare them as such.
      * @param context     the application context. with FTC SDK, hardwareMap.appContext will be passed in
      * @param cameraIndex camera identifier: 0 = back camera, 1 = front camera.
      */
-    
-    public void init(final Context context, final int cameraIndex) {
+
+    public void init(final Context context, final int cameraIndex, final boolean enableCamera) {
         Log.d(TAG, "init() in OpenCVAgent");
         // 'this' refers to the object instantiated by the non-abstract class
         // that extends this class, abstract OpenCVAgent.
@@ -129,7 +129,7 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
         // that will display the image on the phone.
         // We declare a ViewGroup and assign our RelativeLayout resource to it. This
         // gives some placement and dimension parameters to hold our image.
-        mViewGroup = (ViewGroup) activity.findViewById(mResourceID);
+        mViewGroup = activity.findViewById(mResourceID);
 
 
         if (!loaded){
@@ -183,7 +183,9 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
                     // a camera frame is ready. CameraWorker calls drawAndDeliverFrame()
                     // Since CustonCameraView extends JavaCameraView extends CameraBridgeViewBase
                     // all these methods are accessible by object mCameraView.
-                    mCameraView.enableView();
+                    if (enableCamera) {
+                        mCameraView.enableView();
+                    }
 
                     Log.d(TAG, "JavaCameraView enabled");
                     initialized = true;
@@ -216,7 +218,7 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
 
     }
 
-    public boolean isInitialized() { return initialized; };
+    public boolean isInitialized() { return initialized; }
 
     /**
      * Method declared in CvCameraViewListener2
@@ -252,7 +254,7 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
      */
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Log.d(TAG, "called onCameraFrame");
+//        Log.d(TAG, "called onCameraFrame");
 
         // This makes the screen go black for some reason.
         // But it works with CustomCameraView from endercv
@@ -268,14 +270,14 @@ public abstract class OpenCVAgent implements CameraBridgeViewBase.CvCameraViewLi
 
         return res = processCameraFrame(rgba, gray);
     }
-    
+
     /**
      * Override this method! This method is called from onCameraFrame().
      * @param rgba {@link Mat} in RGBA format
      * @param gray {@link Mat} in grayscale
      * @return     {@link Mat} displayable to the screen
-     */     
+     */
     public abstract Mat processCameraFrame(Mat rgba, Mat gray);
-    
-     
- }
+
+
+}

@@ -122,10 +122,9 @@ public class GoldDetector extends OpenCVAgent{
 
         // Loop through all contours to find the contour with the largest area
         double biggestArea = 0;
-        double area = 0;
         MatOfPoint biggestContour = null;
         for(MatOfPoint contour : contourList){
-            area = Imgproc.contourArea(contour);
+            double area = Imgproc.contourArea(contour);
             if (area > biggestArea) {
                 biggestContour = contour;
             }
